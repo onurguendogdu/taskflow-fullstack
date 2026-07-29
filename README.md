@@ -20,6 +20,27 @@ TaskFlow is a full-stack web application for managing personal tasks. It combine
 - Docker setup for the application and MongoDB
 - GitHub Actions CI workflow
 
+## Screenshots
+
+### Task Dashboard
+
+The main dashboard provides an overview of tasks, priorities and current progress. Tasks can be searched, filtered and managed directly from the interface.
+
+![TaskFlow Dashboard](docs/images/taskflow-dashboard.png)
+
+### Task Management
+
+Tasks can be edited through a dedicated dialog, including title, description, status and priority.
+
+![TaskFlow Edit Task](docs/images/taskflow-edit-task.png)
+
+### REST API Documentation
+
+The backend exposes a documented REST API using Swagger / OpenAPI.
+
+![TaskFlow API Documentation](docs/images/taskflow-api-docs.png)
+
+
 ## Tech Stack
 
 ### Frontend
