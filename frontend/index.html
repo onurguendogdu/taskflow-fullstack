@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TaskFlow – Full-Stack Task Management mit Node.js, Express und MongoDB.">
+    <title>TaskFlow · Task Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <main class="shell">
+        <header class="topbar">
+            <a class="brand" href="/" aria-label="TaskFlow Startseite">
+                <span class="brand-mark">TF</span>
+                <span>
+                    <strong>TaskFlow</strong>
+                    <small>Full-Stack Task Management</small>
+                </span>
+            </a>
+
+            <div class="topbar-actions">
+                <a class="ghost-link" href="/api-docs" target="_blank" rel="noreferrer">API Docs</a>
+                <span class="user-chip" id="user-chip">Demo</span>
+                <a class="ghost-link" href="/logout">Abmelden</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div>
+                <p class="eyebrow">TASK MANAGEMENT</p>
+                <h1>Weniger suchen. Mehr erledigen.</h1>
+                <p class="hero-copy">Aufgaben planen, priorisieren, filtern und den Fortschritt auf einen Blick verfolgen.</p>
+            </div>
+
+            <div class="stats" aria-label="Aufgabenstatistik">
+                <article><span id="stat-open">0</span><small>Offen</small></article>
+                <article><span id="stat-doing">0</span><small>In Arbeit</small></article>
+                <article><span id="stat-done">0</span><small>Erledigt</small></article>
+            </div>
+        </section>
+
+        <section class="workspace">
+            <aside class="panel create-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">NEUE AUFGABE</p>
+                        <h2>Task anlegen</h2>
+                    </div>
+                    <span class="number">01</span>
+                </div>
+
+                <form id="create-form" class="task-form">
+                    <label>
+                        <span>Titel</span>
+                        <input id="title" name="title" type="text" minlength="3" maxlength="120" required placeholder="z. B. API-Dokumentation ergänzen">
+                    </label>
+
+                    <label>
+                        <span>Beschreibung</span>
+                        <textarea id="description" name="description" maxlength="600" rows="4" placeholder="Worum geht es bei der Aufgabe?"></textarea>
+                    </label>
+
+                    <div class="form-grid">
+                        <label>
+                            <span>Fällig</span>
+                            <input id="due" name="due" type="datetime-local" required>
+                        </label>
+                        <label>
+                            <span>Priorität</span>
+                            <select id="priority" name="priority">
+                                <option value="medium">Mittel</option>
+                                <option value="high">Hoch</option>
+                                <option value="low">Niedrig</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <button class="primary-button" type="submit">
+                        Aufgabe hinzufügen <span>→</span>
+                    </button>
+                </form>
+            </aside>
+
+            <section class="panel list-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">ÜBERSICHT</p>
+                        <h2>Meine Aufgaben</h2>
+                    </div>
+                    <span class="number">02</span>
+                </div>
+
+                <div class="filters">
+                    <label class="search-field">
+                        <span class="sr-only">Aufgaben durchsuchen</span>
+                        <input id="search" type="search" placeholder="Aufgaben durchsuchen …">
+                    </label>
+                    <select id="status-filter" aria-label="Status filtern">
+                        <option value="">Alle Status</option>
+                        <option value="open">Offen</option>
+                        <option value="doing">In Arbeit</option>
+                        <option value="done">Erledigt</option>
+                    </select>
+                    <select id="priority-filter" aria-label="Priorität filtern">
+                        <option value="">Alle Prioritäten</option>
+                        <option value="high">Hoch</option>
+                        <option value="medium">Mittel</option>
+                        <option value="low">Niedrig</option>
+                    </select>
+                </div>
+
+                <div id="task-list" class="task-list" aria-live="polite"></div>
+            </section>
+        </section>
+
+        <footer>
+            <span>TaskFlow · Node.js · Express · MongoDB</span>
+            <a href="https://github.com/" target="_blank" rel="noreferrer">Portfolio Project</a>
+        </footer>
+    </main>
+
+    <dialog id="edit-dialog">
+        <form id="edit-form" class="task-form" method="dialog">
+            <div class="dialog-heading">
+                <div>
+                    <p class="eyebrow">TASK BEARBEITEN</p>
+                    <h2>Aufgabe aktualisieren</h2>
+                </div>
+                <button class="icon-button" id="close-dialog" type="button" aria-label="Dialog schließen">×</button>
+            </div>
+
+            <input id="edit-id" type="hidden">
+            <label><span>Titel</span><input id="edit-title" minlength="3" maxlength="120" required></label>
+            <label><span>Beschreibung</span><textarea id="edit-description" maxlength="600" rows="4"></textarea></label>
+            <div class="form-grid">
+                <label><span>Fällig</span><input id="edit-due" type="datetime-local" required></label>
+                <label><span>Status</span>
+                    <select id="edit-status">
+                        <option value="open">Offen</option>
+                        <option value="doing">In Arbeit</option>
+                        <option value="done">Erledigt</option>
+                    </select>
+                </label>
+            </div>
+            <label><span>Priorität</span>
+                <select id="edit-priority">
+                    <option value="high">Hoch</option>
+                    <option value="medium">Mittel</option>
+                    <option value="low">Niedrig</option>
+                </select>
+            </label>
+            <div class="dialog-actions">
+                <button class="secondary-button" id="cancel-edit" type="button">Abbrechen</button>
+                <button class="primary-button" type="submit">Änderungen speichern</button>
+            </div>
+        </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

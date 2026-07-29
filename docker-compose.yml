@@ -1,0 +1,23 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: taskflow
+      AUTH_MODE: demo
+      DEMO_USER: portfolio-user
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - taskflow-mongo:/data/db
+
+volumes:
+  taskflow-mongo:
