@@ -1,71 +1,149 @@
-# TaskFlow
+TaskFlow
 
-TaskFlow ist eine Full-Stack-Webanwendung zur Verwaltung persönlicher Aufgaben. Das Projekt kombiniert ein responsives Frontend mit einer REST-API, MongoDB-Persistenz, Validierung, API-Dokumentation und optionaler OpenID-Connect-Authentifizierung.
+TaskFlow is a full-stack web application for managing personal tasks. It combines a responsive frontend with a REST API, MongoDB persistence, server-side validation, API documentation, automated tests, and optional OpenID Connect authentication.
 
-## Features
+Features
 
-- Aufgaben anlegen, bearbeiten und löschen
-- Status: Offen, In Arbeit, Erledigt
-- Prioritäten: Niedrig, Mittel, Hoch
-- Suche sowie Status- und Prioritätsfilter
-- Live-Übersicht über den Aufgabenfortschritt
-- REST-API mit Request-Validierung
-- MongoDB-Persistenz und benutzerbezogene Datentrennung
-- Swagger / OpenAPI unter `/api-docs`
-- Demo-Authentifizierung für unkomplizierten lokalen Start
-- optionaler OIDC/JWT-Modus für externe Identity Provider
-- API-Tests mit dem integrierten Node.js Test Runner
-- Docker-Setup für App + MongoDB
+Create, edit, and delete tasks
 
-## Tech Stack
+Task states: Open, In Progress, Done
 
-Frontend: HTML5, CSS3, JavaScript ES Modules  
-Backend: Node.js, Express, express-validator  
-Datenbank: MongoDB  
-Auth: Demo-Modus oder OpenID Connect / JWT  
-Testing: Node.js Test Runner  
-Dokumentation: OpenAPI / Swagger  
-Tooling: Docker, Git, GitHub Actions
+Priority levels: Low, Medium, High
 
-## Lokal starten
+Search tasks by title and description
 
-### Variante A: Docker
+Filter by status and priority
 
-```bash
+Dashboard overview for task progress
+
+REST API with server-side request validation
+
+MongoDB persistence
+
+User-specific task separation
+
+Swagger / OpenAPI documentation at /api-docs
+
+Demo authentication for an easy local setup
+
+Optional OIDC/JWT authentication for external identity providers
+
+Automated API tests
+
+Docker setup for the application and MongoDB
+
+GitHub Actions CI workflow
+
+Tech Stack
+
+Frontend
+
+HTML5
+
+CSS3
+
+JavaScript
+
+ES Modules
+
+Backend
+
+Node.js
+
+Express
+
+express-validator
+
+Database
+
+MongoDB
+
+Authentication
+
+Demo authentication for local development
+
+OpenID Connect / JWT for external identity providers
+
+Testing
+
+Node.js built-in test runner
+
+In-memory repository for isolated API tests
+
+Documentation & Tooling
+
+OpenAPI / Swagger
+
+Docker
+
+Docker Compose
+
+Git
+
+GitHub Actions
+
+Getting Started
+
+Option A: Docker
+
+The easiest way to run TaskFlow locally is with Docker.
+
 docker compose up --build
-```
 
-Danach:
+After the containers have started:
 
-- App: `http://localhost:3000`
-- API-Dokumentation: `http://localhost:3000/api-docs`
-- Health Check: `http://localhost:3000/health`
+Application: http://localhost:3000
 
-### Variante B: Node.js + lokale MongoDB
+API documentation: http://localhost:3000/api-docs
 
-Voraussetzungen: Node.js 22+ und MongoDB.
+Health check: http://localhost:3000/health
 
-```bash
+Option B: Node.js + Local MongoDB
+
+Requirements:
+
+Node.js 22 or newer
+
+MongoDB
+
+Install the backend dependencies:
+
 cd backend
 npm install
+
+Start the development server:
+
 npm run dev
-```
 
-Standardmäßig läuft TaskFlow im Demo-Auth-Modus. Die Konfiguration kann über Umgebungsvariablen aus `.env.example` gesetzt werden.
+TaskFlow runs in demo authentication mode by default. Configuration values can be provided through environment variables based on .env.example.
 
-## Tests
+Running Tests
 
-```bash
-cd backend
+From the backend directory:
+
 npm test
-```
 
-Die API-Tests verwenden ein In-Memory-Repository und benötigen keine laufende MongoDB.
+The API test suite uses an in-memory repository, so a running MongoDB instance is not required.
 
-## Projektstruktur
+The tests cover:
 
-```text
-TaskFlow/
+Service health
+
+Frontend delivery
+
+Creating tasks
+
+Updating tasks
+
+Deleting tasks
+
+Input validation
+
+Status and search filtering
+
+Project Structure
+
+taskflow/
 ├── frontend/
 │   ├── index.html
 │   ├── styles.css
@@ -73,6 +151,7 @@ TaskFlow/
 │       ├── api.js
 │       ├── main.js
 │       └── ui.js
+│
 ├── backend/
 │   ├── src/
 │   │   ├── auth/
@@ -83,29 +162,64 @@ TaskFlow/
 │   │   ├── openapi.js
 │   │   └── server.js
 │   └── tests/
+│
 ├── docs/
+├── .github/
+│   └── workflows/
+├── Dockerfile
 ├── docker-compose.yml
-└── Dockerfile
-```
+└── README.md
 
-## Architektur
+Architecture
 
-Die Anwendung folgt einer einfachen Trennung von UI, HTTP-API und Persistenz. Express stellt die statischen Frontend-Dateien und die REST-Endpunkte bereit. Die API arbeitet über ein Repository-Interface mit MongoDB; Tests können dadurch ohne echte Datenbank ausgeführt werden.
+TaskFlow separates the user interface, HTTP API, and persistence layer.
 
-Mehr dazu: [`docs/architecture.md`](docs/architecture.md)
+The browser communicates with the Express backend through a JSON REST API. The route layer handles validation and delegates persistence operations to a repository. MongoDB is used in normal application operation, while tests can replace it with an in-memory repository.
 
-## Sicherheit
+This separation keeps the HTTP layer independent from MongoDB implementation details and makes the API easier to test and extend.
 
-- Keine Secrets im Repository
-- OIDC-Zugangsdaten ausschließlich über Umgebungsvariablen
-- HTTP-only Cookie für Access Tokens im OIDC-Modus
-- serverseitige Validierung aller Task-Eingaben
-- Tasks werden immer an den angemeldeten Benutzer gebunden
+More details are available in docs/architecture.md.
 
-## Projekt-Hintergrund
+Authentication
 
-Die erste Version der Anwendung entstand im Rahmen eines Hochschulprojekts. Für diese Portfolio-Version wurde das Projekt eigenständig strukturell überarbeitet und erweitert: neue Projektarchitektur, portable Authentifizierung, Prioritäten, Suche und Filter, überarbeitetes Frontend, Repository-Schicht, Docker-Setup, Tests, Dokumentation und Entfernung projektspezifischer Zugangsdaten.
+TaskFlow supports two authentication modes.
 
-## Lizenz
+Demo Mode
 
-MIT
+The default mode is designed for local development and portfolio demonstrations. It does not require an external identity provider.
+
+OIDC Mode
+
+For external authentication, TaskFlow supports an OpenID Connect provider and validates JWT access tokens.
+
+Sensitive values such as client secrets are configured through environment variables and are not stored in the repository.
+
+See .env.example for the available configuration options.
+
+Security
+
+The project follows several basic security practices:
+
+Secrets are excluded from version control
+
+OIDC credentials are provided through environment variables
+
+Access tokens can be stored in HTTP-only cookies
+
+Task input is validated on the server
+
+Tasks are associated with the authenticated user
+
+Environment files are excluded through .gitignore
+
+See SECURITY.md for additional information.
+
+Background
+
+TaskFlow started from an earlier learning project and was later extensively redesigned and expanded as a personal portfolio project.
+
+The portfolio version includes a new application structure, redesigned frontend, repository abstraction, task priorities, search and filtering, portable authentication, Docker support, automated tests, API documentation, continuous integration, and removal of project-specific credentials.
+
+License
+
+This project is licensed under the MIT License. See LICENSE for details.
