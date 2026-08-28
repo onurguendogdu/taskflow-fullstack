@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import "./App.css"
 
+import TaskCard from "./components/TaskCard"
 import { getTasks } from "./services/taskApi"
 import type { Task } from "./types/Task"
 
@@ -44,11 +45,7 @@ function App() {
       {!loading && !error && tasks.length > 0 && (
         <ul>
           {tasks.map((task) => (
-            <li key={task._id}>
-              <strong>{task.title}</strong>
-              <span> · {task.status}</span>
-              <span> · {task.priority}</span>
-            </li>
+            <TaskCard key={task._id} task={task} />
           ))}
         </ul>
       )}
