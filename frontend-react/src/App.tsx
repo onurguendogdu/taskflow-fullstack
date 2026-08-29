@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import "./App.css"
 
 import TaskCard from "./components/TaskCard"
+import TaskForm from "./components/TaskForm"
 import { getTasks } from "./services/taskApi"
 import type { Task } from "./types/Task"
 
@@ -29,10 +30,18 @@ function App() {
     loadTasks()
   }, [])
 
+  function handleTaskCreated(task: Task) {
+    setTasks((currentTasks) => [...currentTasks, task])
+  }
+
   return (
     <main>
       <h1>TaskFlow</h1>
       <p>React + TypeScript migration</p>
+
+      <TaskForm onTaskCreated={handleTaskCreated} />
+
+      <h2>Aufgaben</h2>
 
       {loading && <p>Tasks werden geladen...</p>}
 
