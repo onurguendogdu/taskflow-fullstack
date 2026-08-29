@@ -19,10 +19,12 @@ function TaskForm({ onTaskCreated }: TaskFormProps) {
   const [status, setStatus] = useState<TaskStatus>("open")
   const [priority, setPriority] = useState<TaskPriority>("medium")
   const [error, setError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError("")
+    setSubmitting(true)
 
     try {
       const newTask = await createTask({
@@ -46,6 +48,8 @@ function TaskForm({ onTaskCreated }: TaskFormProps) {
       } else {
         setError("Task konnte nicht erstellt werden.")
       }
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -116,7 +120,9 @@ function TaskForm({ onTaskCreated }: TaskFormProps) {
         </select>
       </div>
 
-      <button type="submit">Aufgabe erstellen</button>
+      <button type="submit" disabled={submitting}>
+        {submitting ? "Wird erstellt..." : "Aufgabe erstellen"}
+      </button>
 
       {error && <p>{error}</p>}
     </form>
