@@ -4,12 +4,20 @@ import "./App.css"
 import TaskCard from "./components/TaskCard"
 import TaskForm from "./components/TaskForm"
 import { getTasks } from "./services/taskApi"
-import type { Task } from "./types/Task"
+import type {
+  Task,
+  TaskPriority,
+  TaskStatus,
+} from "./types/Task"
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | "">("")
+  const [priorityFilter, setPriorityFilter] =
+    useState<TaskPriority | "">("")
 
   useEffect(() => {
     async function loadTasks() {
@@ -34,6 +42,16 @@ function App() {
     setTasks((currentTasks) => [...currentTasks, task])
   }
 
+  const filteredTasks = tasks.filter((task) => {
+    const matchesStatus =
+      statusFilter === "" || task.status === statusFilter
+
+    const matchesPriority =
+      priorityFilter === "" || task.priority === priorityFilter
+
+    return matchesStatus && matchesPriority
+  })
+
   return (
     <main>
       <h1>TaskFlow</h1>
@@ -43,17 +61,49 @@ function App() {
 
       <h2>Aufgaben</h2>
 
+      <div>
+        <label htmlFor="statusFilter">Status filtern</label>
+        <select
+          id="statusFilter"
+          value={statusFilter}
+          onChange={(event) =>
+            setStatusFilter(event.target.value as TaskStatus | "")
+          }
+        >
+          <option value="">Alle</option>
+          <option value="open">Offen</option>
+          <option value="doing">In Bearbeitung</option>
+          <option value="done">Erledigt</option>
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="priorityFilter">Priorität filtern</label>
+        <select
+          id="priorityFilter"
+          value={priorityFilter}
+          onChange={(event) =>
+            setPriorityFilter(event.target.value as TaskPriority | "")
+          }
+        >
+          <option value="">Alle</option>
+          <option value="low">Niedrig</option>
+          <option value="medium">Mittel</option>
+          <option value="high">Hoch</option>
+        </select>
+      </div>
+
       {loading && <p>Tasks werden geladen...</p>}
 
       {error && <p>{error}</p>}
 
-      {!loading && !error && tasks.length === 0 && (
-        <p>Keine Aufgaben vorhanden.</p>
+      {!loading && !error && filteredTasks.length === 0 && (
+        <p>Keine passenden Aufgaben vorhanden.</p>
       )}
 
-      {!loading && !error && tasks.length > 0 && (
+      {!loading && !error && filteredTasks.length > 0 && (
         <ul>
-          {tasks.map((task) => (
+          {filteredTasks.map((task) => (
             <TaskCard key={task._id} task={task} />
           ))}
         </ul>
