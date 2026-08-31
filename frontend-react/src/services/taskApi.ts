@@ -1,57 +1,73 @@
-import type { CreateTaskInput, Task } from "../types/Task"
+import type { CreateTaskInput, Task } from "../types/Task";
 
-const BASE_URL = "/api/tasks"
+const BASE_URL = "/api/tasks";
 
 async function getErrorMessage(
   response: Response,
-  fallbackMessage: string,
+  fallback: string
 ): Promise<string> {
   try {
-    const data = await response.json()
+    const data = await response.json();
 
     if (typeof data.message === "string") {
-      return data.message
+      return data.message;
     }
   } catch {
-    // Falls keine JSON-Fehlermeldung vorhanden ist,
-    // verwenden wir die allgemeine Meldung.
+    // Response hatte keinen lesbaren JSON-Body
   }
 
-  return fallbackMessage
+  return fallback;
 }
 
 export async function getTasks(): Promise<Task[]> {
-  const response = await fetch(BASE_URL)
+  const response = await fetch(BASE_URL);
 
   if (!response.ok) {
     const message = await getErrorMessage(
       response,
-      "Tasks konnten nicht geladen werden.",
-    )
+      "Tasks konnten nicht geladen werden"
+    );
 
-    throw new Error(message)
+    throw new Error(message);
   }
 
-  return response.json()
+  return response.json();
 }
 
-export async function createTask(input: CreateTaskInput): Promise<Task> {
+export async function createTask(
+  task: CreateTaskInput
+): Promise<Task> {
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(input),
-  })
+    body: JSON.stringify(task),
+  });
 
   if (!response.ok) {
     const message = await getErrorMessage(
       response,
-      "Task konnte nicht erstellt werden.",
-    )
+      "Task konnte nicht erstellt werden"
+    );
 
-    throw new Error(message)
+    throw new Error(message);
   }
 
-  return response.json()
+  return response.json();
+}
+
+export async function deleteTask(id: string): Promise<void> {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Task konnte nicht gelöscht werden"
+    );
+
+    throw new Error(message);
+  }
 }

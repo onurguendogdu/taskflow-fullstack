@@ -3,7 +3,7 @@ import "./App.css"
 
 import TaskCard from "./components/TaskCard"
 import TaskForm from "./components/TaskForm"
-import { getTasks } from "./services/taskApi"
+import { deleteTask, getTasks } from "./services/taskApi"
 import type {
   Task,
   TaskPriority,
@@ -40,6 +40,24 @@ function App() {
 
   function handleTaskCreated(task: Task) {
     setTasks((currentTasks) => [...currentTasks, task])
+  }
+
+  async function handleTaskDelete(id: string) {
+    try {
+      setError("")
+
+      await deleteTask(id)
+
+      setTasks((currentTasks) =>
+        currentTasks.filter((task) => task._id !== id)
+      )
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("Task konnte nicht gelöscht werden.")
+      }
+    }
   }
 
   const filteredTasks = tasks.filter((task) => {
@@ -104,7 +122,11 @@ function App() {
       {!loading && !error && filteredTasks.length > 0 && (
         <ul>
           {filteredTasks.map((task) => (
-            <TaskCard key={task._id} task={task} />
+            <TaskCard
+              key={task._id}
+              task={task}
+              onDelete={handleTaskDelete}
+            />
           ))}
         </ul>
       )}
