@@ -1,4 +1,8 @@
-import type { CreateTaskInput, Task } from "../types/Task";
+import type {
+  CreateTaskInput,
+  Task,
+  TaskStatus,
+} from "../types/Task";
 
 const BASE_URL = "/api/tasks";
 
@@ -70,4 +74,34 @@ export async function deleteTask(id: string): Promise<void> {
 
     throw new Error(message);
   }
+}
+
+export async function updateTaskStatus(
+  task: Task,
+  status: TaskStatus
+): Promise<Task> {
+  const response = await fetch(`${BASE_URL}/${task._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: task.title,
+      description: task.description,
+      due: task.due,
+      status,
+      priority: task.priority,
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Status konnte nicht geändert werden"
+    );
+
+    throw new Error(message);
+  }
+
+  return response.json();
 }

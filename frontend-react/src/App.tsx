@@ -3,7 +3,11 @@ import "./App.css"
 
 import TaskCard from "./components/TaskCard"
 import TaskForm from "./components/TaskForm"
-import { deleteTask, getTasks } from "./services/taskApi"
+import {
+  deleteTask,
+  getTasks,
+  updateTaskStatus,
+} from "./services/taskApi"
 import type {
   Task,
   TaskPriority,
@@ -56,6 +60,34 @@ function App() {
         setError(err.message)
       } else {
         setError("Task konnte nicht gelöscht werden.")
+      }
+    }
+  }
+
+  async function handleStatusChange(
+    task: Task,
+    status: TaskStatus
+  ) {
+    try {
+      setError("")
+
+      const updatedTask = await updateTaskStatus(
+        task,
+        status
+      )
+
+      setTasks((currentTasks) =>
+        currentTasks.map((currentTask) =>
+          currentTask._id === updatedTask._id
+            ? updatedTask
+            : currentTask
+        )
+      )
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("Status konnte nicht geändert werden.")
       }
     }
   }
@@ -126,6 +158,7 @@ function App() {
               key={task._id}
               task={task}
               onDelete={handleTaskDelete}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </ul>
