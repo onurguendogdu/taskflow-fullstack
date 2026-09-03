@@ -1,6 +1,7 @@
 import type {
   CreateTaskInput,
   Task,
+  TaskPriority,
   TaskStatus,
 } from "../types/Task";
 
@@ -98,6 +99,36 @@ export async function updateTaskStatus(
     const message = await getErrorMessage(
       response,
       "Status konnte nicht geändert werden"
+    );
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+export async function updateTaskPriority(
+  task: Task,
+  priority: TaskPriority
+): Promise<Task> {
+  const response = await fetch(`${BASE_URL}/${task._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: task.title,
+      description: task.description,
+      due: task.due,
+      status: task.status,
+      priority,
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Priorität konnte nicht geändert werden"
     );
 
     throw new Error(message);

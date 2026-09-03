@@ -1,5 +1,6 @@
 import type {
   Task,
+  TaskPriority,
   TaskStatus,
 } from "../types/Task";
 
@@ -7,12 +8,14 @@ interface Props {
   task: Task;
   onDelete: (id: string) => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
+  onPriorityChange: (task: Task, priority: TaskPriority) => void;
 }
 
 function TaskCard({
   task,
   onDelete,
   onStatusChange,
+  onPriorityChange,
 }: Props) {
   return (
     <li>
@@ -34,7 +37,21 @@ function TaskCard({
         <option value="done">Erledigt</option>
       </select>
 
-      <span> · {task.priority}</span>
+      <span> · </span>
+
+      <select
+        value={task.priority}
+        onChange={(event) =>
+          onPriorityChange(
+            task,
+            event.target.value as TaskPriority
+          )
+        }
+      >
+        <option value="low">Niedrig</option>
+        <option value="medium">Mittel</option>
+        <option value="high">Hoch</option>
+      </select>
 
       <button
         type="button"

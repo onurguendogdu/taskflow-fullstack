@@ -6,6 +6,7 @@ import TaskForm from "./components/TaskForm"
 import {
   deleteTask,
   getTasks,
+  updateTaskPriority,
   updateTaskStatus,
 } from "./services/taskApi"
 import type {
@@ -92,6 +93,34 @@ function App() {
     }
   }
 
+  async function handlePriorityChange(
+    task: Task,
+    priority: TaskPriority
+  ) {
+    try {
+      setError("")
+
+      const updatedTask = await updateTaskPriority(
+        task,
+        priority
+      )
+
+      setTasks((currentTasks) =>
+        currentTasks.map((currentTask) =>
+          currentTask._id === updatedTask._id
+            ? updatedTask
+            : currentTask
+        )
+      )
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("Priorität konnte nicht geändert werden.")
+      }
+    }
+  }
+
   const filteredTasks = tasks.filter((task) => {
     const matchesStatus =
       statusFilter === "" || task.status === statusFilter
@@ -159,6 +188,7 @@ function App() {
               task={task}
               onDelete={handleTaskDelete}
               onStatusChange={handleStatusChange}
+              onPriorityChange={handlePriorityChange}
             />
           ))}
         </ul>
